@@ -11,6 +11,7 @@ from kivy.clock import Clock
 from kivy.graphics import Rectangle
 from random import randint
 from generate_stimuli import *
+from Verbosity import *
 
 from kivy.config import Config
 Config.set('graphics','resizable',0) #don't make the app re-sizeable
@@ -44,15 +45,32 @@ stimulus.y = Window.height/2 - stimulus.height/2
 
 # stimulus array
 stimulus_store = []
+score = 0
+Tot_score = Label(text=str(score))
+# Position Tot_score
+Tot_score.x = Window.width*0.5
+Tot_score.y = Window.height*0.9
+
+lives = spec["num_lives"]
 
 # ----------- Functions ------------------
 
-def end_turn(input):
+def end_turn(response):
+    # Evaluate the user's response
+    answer = evaluate_response(spec['verbose'],stimulus_store,response)
+    if not answer:
+        lives-=1    
+    # update score based upon evaluation
+    if answer:
+        score+=10**response
+    # Update displayed score
+    Tot_score.text(str(score))
+    # Generate a new stimulus and store it
     new_stim = generate_stimulus(spec["type_stimulus"],spec["num_stimuli"])
     if len(stimulus_store) >= spec["max_nback"]:
         stimulus_store.pop(0)
     stimulus_store.append(new_stim)
-    print stimulus_store, len(stimulus_store)
+    verboseprint(spec["verbose"], stimulus_store, len(stimulus_store))
     return new_stim
 
 # ----------- Classes --------------------
@@ -85,12 +103,12 @@ class WidgetDrawer(Widget):
             self.rect_bg.pos = self.pos 
  
     def update_graphics_pos(self, instance, value):
-#if the widgets position moves, the rectangle that contains the image is also moved
+    #if the widgets position moves, the rectangle that contains the image is also moved
         self.rect_bg.pos = value  
     #use this function to change widget size        
     def setSize(self,width, height): 
         self.size = (width, height)
-     #use this function to change widget position    
+    #use this function to change widget position    
     def setPos(xpos,ypos):
         self.x = xpos
         self.y = ypos
@@ -129,7 +147,7 @@ class GUI(Widget):
         oneButton = MyButton(text='One', num=1, pos=(Window.left*0.1,Window.height*0.8))
         twoButton = MyButton(text='Two', num=2, pos=(Window.left*0.1,Window.height*0.6))
         threeButton = MyButton(text='Three', num=3, pos=(Window.left*0.1,Window.height*0.4))
-        #*** It's important that the parent get the button so you can click on it
+        #*** It's important that the parent gets the button so you can click on it
         #otherwise you can't click through the main game's canvas
         self.parent.add_widget(oneButton)
         self.parent.add_widget(twoButton)
