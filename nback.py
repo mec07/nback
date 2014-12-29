@@ -48,6 +48,20 @@ import os
 
 from nback_game import *
 
+spec = {
+    "verbose":1,
+    "num_high_scores": 10, 
+    "highscorefile":"highscores.txt",
+    "max_nback": 5, 
+    "type_stimulus": "random", 
+    "present_stimuli": 10, 
+    "num_stimuli": 5,
+    "max_name_length":10,
+    "max_score":1000000,
+    "num_lives":3,
+    "gamename":"NBACK",
+    "max_level":5
+}
 
 # Read input file
 inputfile='game_spec.txt'
