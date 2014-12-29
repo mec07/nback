@@ -16,11 +16,12 @@ Config.set('graphics','resizable',0) #don't make the app re-sizeable
  #this fixes drawing issues on some phones
 Window.clearcolor = (0,0,0,1.) 
 
+# Global objects
+stimulus = Label(text='TIGER')
 
 def display_simulus(input):
     if input == 2:
         stimulus.text = "HORSE"
-
 
 class WidgetDrawer(Widget):
     #This widget is used to draw all of the objects on the screen
@@ -52,15 +53,13 @@ class WidgetDrawer(Widget):
     def update_graphics_pos(self, instance, value):
 #if the widgets position moves, the rectangle that contains the image is also moved
         self.rect_bg.pos = value  
-#use this function to change widget size        
+    #use this function to change widget size        
     def setSize(self,width, height): 
         self.size = (width, height)
- #use this function to change widget position    
+     #use this function to change widget position    
     def setPos(xpos,ypos):
         self.x = xpos
         self.y = ypos
-
-
 
 class MyButton(Button):
     #class used to get uniform button styles
@@ -79,8 +78,6 @@ class MyButton(Button):
 
         self.bind(on_release=press_button) 
 
-stimulus = Label(text='TIGER')
-
 class GUI(Widget):
     #this is the main widget that contains the game. 
     def __init__(self, **kwargs):
@@ -91,7 +88,6 @@ class GUI(Widget):
         self.add_widget(l) #add the label to the screen
         self.add_widget(stimulus)
 
- 
     #handle input events
     #kivy has a great event handler. the on_touch_down function is already recognized 
     #and doesn't need t obe setup. Every time the screen is touched, the on_touch_down function is called
@@ -132,6 +128,10 @@ class ClientApp(App):
         Clock.schedule_interval(app.update, 1.0/60.0) 
         parent.add_widget(app) #use this hierarchy to make it easy to deal w/buttons
         return parent
+
+
+
+
 
 if __name__ == '__main__' :
     ClientApp().run()
