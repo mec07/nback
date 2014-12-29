@@ -9,6 +9,8 @@ from kivy.core.window import Window
 from kivy.properties import NumericProperty
 from kivy.clock import Clock
 from kivy.graphics import Rectangle
+from random import randint
+from generate_stimuli import *
 
 from kivy.config import Config
 Config.set('graphics','resizable',0) #don't make the app re-sizeable
@@ -16,12 +18,44 @@ Config.set('graphics','resizable',0) #don't make the app re-sizeable
  #this fixes drawing issues on some phones
 Window.clearcolor = (0,0,0,1.) 
 
-# Global objects
-stimulus = Label(text='TIGER')
+# ----------- Global objects -------------
 
-def display_simulus(input):
-    if input == 2:
-        stimulus.text = "HORSE"
+# game spec
+spec = {
+    "verbose":1,
+    "num_high_scores": 10, 
+    "highscorefile":"highscores.txt",
+    "max_nback": 3, 
+    "type_stimulus": "badwords", 
+    "present_stimuli": 10,
+    "num_stimuli": 5,
+    "max_name_length":10,
+    "max_score":1000000,
+    "num_lives":3,
+    "gamename":"NBACK",
+    "max_level":5
+}
+
+
+# stimulus
+stimulus = Label()
+stimulus.x = Window.width/2 - stimulus.width/2
+stimulus.y = Window.height/2 - stimulus.height/2
+
+# stimulus array
+stimulus_store = []
+
+# ----------- Functions ------------------
+
+def end_turn(input):
+    new_stim = generate_stimulus(spec["type_stimulus"],spec["num_stimuli"])
+    if len(stimulus_store) >= spec["max_nback"]:
+        stimulus_store.pop(0)
+    stimulus_store.append(new_stim)
+    print stimulus_store, len(stimulus_store)
+    return new_stim
+
+# ----------- Classes --------------------
 
 class WidgetDrawer(Widget):
     #This widget is used to draw all of the objects on the screen
@@ -67,6 +101,7 @@ class MyButton(Button):
         super(MyButton, self).__init__(**kwargs)
  #all we're doing is setting the font size. more can be done later
         self.font_size = Window.width*0.018
+        self.size = Window.width*.3,Window.width*.1
         for key, value in kwargs.iteritems():      # styles is a regular dictionary
             if key == "num":
                 self.num = value
@@ -74,7 +109,7 @@ class MyButton(Button):
         def press_button(obj):
         #this function will be called whenever the reset button is pushed
             print '%s button pushed' % self.num
-            display_simulus(self.num)
+            stimulus.text = end_turn(self.num)
 
         self.bind(on_release=press_button) 
 
@@ -86,30 +121,27 @@ class GUI(Widget):
         l.x = Window.width/2 - l.width/2
         l.y = Window.height*0.8
         self.add_widget(l) #add the label to the screen
+        stimulus.text = "Touch to start"
         self.add_widget(stimulus)
+        self.started = False
 
-    #handle input events
-    #kivy has a great event handler. the on_touch_down function is already recognized 
-    #and doesn't need t obe setup. Every time the screen is touched, the on_touch_down function is called
- 
-    def gameStart(self): #this function is called when the game ends
-        #add a restart button
-        oneButton = MyButton(text='One', num=1)
-        twoButton = MyButton(text='Two', num=2)
-
-        oneButton.size = (Window.width*.3,Window.width*.1)
-        twoButton.size = (Window.width*.3,Window.width*.1)
-        oneButton.pos = Window.width*0.5-oneButton.width, Window.height*0.5
-        twoButton.pos = Window.width*0.5+twoButton.width, Window.height*0.5   
- 
+    def gameStart(self): 
+        oneButton = MyButton(text='One', num=1, pos=(Window.left*0.1,Window.height*0.8))
+        twoButton = MyButton(text='Two', num=2, pos=(Window.left*0.1,Window.height*0.6))
+        threeButton = MyButton(text='Three', num=3, pos=(Window.left*0.1,Window.height*0.4))
         #*** It's important that the parent get the button so you can click on it
         #otherwise you can't click through the main game's canvas
         self.parent.add_widget(oneButton)
         self.parent.add_widget(twoButton)
+        self.parent.add_widget(threeButton)
 
+    #Every time the screen is touched, the on_touch_down function is called
     def on_touch_down(self, touch):
-        self.gameStart()
- 
+        if not self.started:
+            self.started = True
+            stimulus.text = end_turn(0)
+            self.gameStart()
+
     def update(self,dt):
         #This update function is the main update function for the game
         #All of the game logic has its origin here 
