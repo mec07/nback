@@ -42,7 +42,7 @@ spec = {
 # stimulus
 stimulus = Label()
 stimulus.x = Window.width/2 - stimulus.width/2
-stimulus.y = Window.height/2 - stimulus.height/2
+stimulus.y = Window.height/2 - stimulus.height/2 
 
 # stimulus array
 stimulus_store = []
@@ -50,8 +50,8 @@ score = 0
 
 score_display = Label(text="0")
 # Position score_display
-score_display.x = Window.width*0.5
-score_display.y = Window.height*0.9
+score_display.x = Window.width*0.5 - score_display.width/2
+score_display.y = Window.height*0.9 - ((score_display.width/2)*2)
 
 
 lives = spec["num_lives"]
