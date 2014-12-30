@@ -154,7 +154,7 @@ class GUI(Widget):
         self.clear_widgets()
         self.parent.remove_widget(self.oneButton)
         self.parent.remove_widget(self.twoButton)
-        self.parent.remove_widget(self.threeButton)
+        self.parent.remove_widget(self.thgit reeButton)
         # remake stimulus
         self.stimulus = Label(font_name="assets/Montserrat-Bold.ttf")
         self.stimulus.x = Window.width/2 - self.stimulus.width/2
