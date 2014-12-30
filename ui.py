@@ -11,6 +11,7 @@ from kivy.clock import Clock
 from kivy.graphics import Rectangle
 from random import randint
 from generate_stimuli import *
+from evaluation import *
 from Verbosity import *
 
 from kivy.config import Config
@@ -46,16 +47,21 @@ stimulus.y = Window.height/2 - stimulus.height/2
 # stimulus array
 stimulus_store = []
 score = 0
-Tot_score = Label(text=str(score))
-# Position Tot_score
-Tot_score.x = Window.width*0.5
-Tot_score.y = Window.height*0.9
+
+score_display = Label(text="0")
+# Position score_display
+score_display.x = Window.width*0.5
+score_display.y = Window.height*0.9
+
 
 lives = spec["num_lives"]
 
 # ----------- Functions ------------------
 
 def end_turn(response):
+    global score
+    global lives
+    global stimulus_store
     # Evaluate the user's response
     answer = evaluate_response(spec['verbose'],stimulus_store,response)
     if not answer:
@@ -64,7 +70,7 @@ def end_turn(response):
     if answer:
         score+=10**response
     # Update displayed score
-    Tot_score.text(str(score))
+    score_display.text = str(score)
     # Generate a new stimulus and store it
     new_stim = generate_stimulus(spec["type_stimulus"],spec["num_stimuli"])
     if len(stimulus_store) >= spec["max_nback"]:
@@ -142,6 +148,7 @@ class GUI(Widget):
         stimulus.text = "Touch to start"
         self.add_widget(stimulus)
         self.started = False
+        self.add_widget(score_display)
 
     def gameStart(self): 
         oneButton = MyButton(text='One', num=1, pos=(Window.left*0.1,Window.height*0.8))
@@ -159,6 +166,8 @@ class GUI(Widget):
             self.started = True
             stimulus.text = end_turn(0)
             self.gameStart()
+        else:
+            stimulus.text = end_turn(0)
 
     def update(self,dt):
         #This update function is the main update function for the game
