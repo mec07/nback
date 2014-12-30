@@ -22,13 +22,15 @@ Window.clearcolor = (0,0,0,1.)
 
 # ----------- Global objects -------------
 
+__version__ = 'something'
+
 # game spec
 spec = {
     "verbose":1,
     "num_high_scores": 10, 
     "highscorefile":"highscores.txt",
     "max_nback": 3, 
-    "type_stimulus": "badwords", 
+    "type_stimulus": "animals", 
     "present_stimuli": 10,
     "num_stimuli": 5,
     "max_name_length":10,
