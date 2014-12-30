@@ -1,13 +1,13 @@
 [app]
 
 # (str) Title of your application
-title = nBack
+title = "nBack"
 
 # (str) Package name
-package.name = nback
+package.name = "nback"
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = https://github.com/mec07/nback
+package.domain = "https://github.com/mec07/nback"
 
 # (str) Source code where the main.py live
 source.dir = .
@@ -59,7 +59,7 @@ fullscreen = 1
 #android.permissions = INTERNET
 
 # (int) Android API to use
-#android.api = 14
+# android.api = 14
 
 # (int) Minimum API required (8 = Android 2.2 devices)
 #android.minapi = 8
@@ -77,7 +77,7 @@ fullscreen = 1
 #android.ndk_path =
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
-#android.sdk_path =
+android.sdk_path = "/home/jonathan/Android/Sdk"
 
 # (str) python-for-android git clone directory (if empty, it will be automatically cloned from github)
 #android.p4a_dir =
@@ -144,7 +144,7 @@ fullscreen = 1
 [buildozer]
 
 # (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
-log_level = 1
+log_level = 2
 
 # (int) Display warning if buildozer is run as root (0 = False, 1 = True)
 warn_on_root = 1

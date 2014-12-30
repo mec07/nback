@@ -1,6 +1,5 @@
 import kivy 
 import ipdb
-import sys
 
 from kivy.app import App
 from kivy.uix.widget import Widget
@@ -23,7 +22,7 @@ Window.clearcolor = (0,0,0,1.)
 
 # ----------- Global objects -------------
 
-__version__ = '"0"' # for turning into android app
+__version__ = '"0"'
 
 # game spec
 spec = {
@@ -41,11 +40,46 @@ spec = {
     "max_level":5
 }
 
+# stimulus
+stimulus = Label()
+stimulus.x = Window.width/2 - stimulus.width/2
+stimulus.y = Window.height/2 - stimulus.height/2 
 
+# stimulus array
+stimulus_store = []
+score = 0
+
+score_display = Label(text="0")
+# Position score_display
+score_display.x = Window.width*0.5 - score_display.width/2
+score_display.y = Window.height*0.9 - ((score_display.width/2)*2)
+
+
+lives = spec["num_lives"]
 
 # ----------- Functions ------------------
 
-
+def end_turn(response):
+    global score
+    global lives
+    global stimulus_store
+    # Evaluate the user's response
+    answer = evaluate_response(spec['verbose'],stimulus_store,response)
+    if not answer:
+        lives-=1    
+    # update score based upon evaluation
+    if answer:
+        score+=10**response
+    # Update displayed score
+    score_display.text = str(score)
+    # Generate a new stimulus and store it
+    new_stim = generate_stimulus(spec["type_stimulus"],spec["num_stimuli"])
+    if len(stimulus_store) >= spec["max_nback"]:
+        stimulus_store.pop(0)
+    stimulus_store.append(new_stim)
+    verboseprint(spec["verbose"], stimulus_store, len(stimulus_store))
+    stimulus.text = new_stim
+    return new_stim
 
 # ----------- Classes --------------------
 
@@ -97,102 +131,45 @@ class MyButton(Button):
         for key, value in kwargs.iteritems():      # styles is a regular dictionary
             if key == "num":
                 self.num = value
-            if key == "_parent":
-                self._parent = value
 
         def press_button(obj):
         #this function will be called whenever the reset button is pushed
             print '%s button pushed' % self.num
-            self._parent.end_turn(self.num)
+            end_turn(self.num)
 
         self.bind(on_release=press_button) 
 
 class GUI(Widget):
-
-    def gameStart(self): 
-        self.started = True
+    #this is the main widget that contains the game. 
+    def __init__(self, **kwargs):
+        super(GUI, self).__init__(**kwargs)
         l = Label(text='NBack') #give the game a title
         l.x = Window.width/2 - l.width/2
         l.y = Window.height*0.8
         self.add_widget(l) #add the label to the screen
-        # stimulus array
-        self.stimulus_store = []
-        # score_display
-        self.score = 0
-        self.score_display = Label(text="0")
-        self.score_display.x = Window.width*0.5 - self.score_display.width/2
-        self.score_display.y = Window.height*0.9 - ((self.score_display.width/2)*2)
-        self.add_widget(self.score_display)
-        # lives
-        self.lives = spec["num_lives"]
-        self.oneButton = MyButton(_parent=self,text='One', num=1, pos=(Window.left*0.1,Window.height*0.8))
-        self.twoButton = MyButton(_parent=self,text='Two', num=2, pos=(Window.left*0.1,Window.height*0.6))
-        self.threeButton = MyButton(_parent=self,text='Three', num=3, pos=(Window.left*0.1,Window.height*0.4))
+        stimulus.text = "Touch to start"
+        self.add_widget(stimulus)
+        self.started = False
+        self.add_widget(score_display)
+
+    def gameStart(self): 
+        oneButton = MyButton(text='One', num=1, pos=(Window.left*0.1,Window.height*0.8))
+        twoButton = MyButton(text='Two', num=2, pos=(Window.left*0.1,Window.height*0.6))
+        threeButton = MyButton(text='Three', num=3, pos=(Window.left*0.1,Window.height*0.4))
         #*** It's important that the parent gets the button so you can click on it
         #otherwise you can't click through the main game's canvas
-        self.parent.add_widget(self.oneButton)
-        self.parent.add_widget(self.twoButton)
-        self.parent.add_widget(self.threeButton)
-
-        #  ----------  debugging  -----------  #
-        if "d" in sys.argv:
-            ipdb.set_trace()
-        #  ----------  debugging  -----------  #
-
-    #this is the main widget that contains the game. 
-    def __init__(self, **kwargs):
-        super(GUI, self).__init__(**kwargs)
-        self.started = False
-        # stimulus
-        self.stimulus = Label()
-        self.stimulus.x = Window.width/2 - self.stimulus.width/2
-        self.stimulus.y = Window.height/2 - self.stimulus.height/2 
-        self.stimulus.text = "Touch to start"
-        self.add_widget(self.stimulus)
-
-    def game_over(self):
-        self.clear_widgets()
-        self.parent.remove_widget(self.oneButton)
-        self.parent.remove_widget(self.twoButton)
-        self.parent.remove_widget(self.threeButton)
-        # remake stimulus
-        self.stimulus = Label()
-        self.stimulus.x = Window.width/2 - self.stimulus.width/2
-        self.stimulus.y = Window.height/2 - self.stimulus.height/2 
-        self.stimulus.text = "Touch to restart"
-        self.add_widget(self.stimulus)
-        self.started = False
-
-    def end_turn(self,response):
-        # Evaluate the user's response
-        answer = evaluate_response(spec['verbose'],self.stimulus_store,response)
-        if not answer:
-            self.lives-=1    
-        # update score based upon evaluation
-        if answer:
-            self.score+=10**response
-        # Update displayed score
-        self.score_display.text = str(self.score)
-        # Game over
-        if self.lives <=0:
-            self.game_over()
-        else:
-            # Generate a new stimulus and store it
-            new_stim = generate_stimulus(spec["type_stimulus"],spec["num_stimuli"])
-            if len(self.stimulus_store) >= spec["max_nback"]:
-                self.stimulus_store.pop(0)
-            self.stimulus_store.append(new_stim)
-            verboseprint(spec["verbose"], self.stimulus_store, len(self.stimulus_store))
-            self.stimulus.text = new_stim
-            return new_stim
+        self.parent.add_widget(oneButton)
+        self.parent.add_widget(twoButton)
+        self.parent.add_widget(threeButton)
 
     #Every time the screen is touched, the on_touch_down function is called
     def on_touch_down(self, touch):
         if not self.started:
+            self.started = True
+            end_turn(0)
             self.gameStart()
-            self.end_turn(0)
         else:
-            self.end_turn(0)
+            end_turn(0)
 
     def update(self,dt):
         #This update function is the main update function for the game
@@ -200,7 +177,6 @@ class GUI(Widget):
         #events are setup here as well
         # everything here is executed every 60th of a second.
         pass
-
 
 class ClientApp(App):
     def build(self):
