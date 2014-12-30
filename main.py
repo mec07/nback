@@ -134,10 +134,7 @@ class GUI(Widget):
         self.parent.add_widget(self.twoButton)
         self.parent.add_widget(self.threeButton)
 
-        #  ----------  debugging  -----------  #
-        if "d" in sys.argv:
-            ipdb.set_trace()
-        #  ----------  debugging  -----------  #
+
 
     #this is the main widget that contains the game. 
     def __init__(self, **kwargs):
@@ -163,6 +160,12 @@ class GUI(Widget):
         self.add_widget(self.stimulus)
         self.started = False
 
+    def num_points(self,response):
+        if response==0:
+            return 0
+        else:
+            return 10**(response-1)
+
     def end_turn(self,response):
         # Evaluate the user's response
         answer = evaluate_response(spec['verbose'],self.stimulus_store,response)
@@ -170,7 +173,7 @@ class GUI(Widget):
             self.lives-=1    
         # update score based upon evaluation
         if answer:
-            self.score+=10**response
+            self.score+=self.num_points(response)
         # Update displayed score
         self.score_display.text = str(self.score)
         # Game over
