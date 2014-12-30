@@ -9,7 +9,7 @@ from kivy.uix.button import Button
 from kivy.core.window import Window
 from kivy.properties import NumericProperty
 from kivy.clock import Clock
-from kivy.graphics import Rectangle
+from kivy.graphics import Rectangle, Color, Ellipse
 from random import randint
 from generate_stimuli import *
 from evaluation import *
@@ -107,8 +107,23 @@ class MyButton(Button):
 
         self.bind(on_release=press_button) 
 
-class GUI(Widget):
+class Stimulus(Widget):
+    def __init__(self, **kwargs):
+        super(Stimulus, self).__init__(**kwargs)
+        self.label = Label(text="[color=ff0000]World[/color]", markup=True)
+        self.label.font_name="assets/Montserrat-Bold.ttf"
+        self.add_widget(self.label)
+        self.font_size = Window.width*0.018
+        self.x = Window.width/2 - self.width/2
+        self.y = Window.height/2 - self.height/2
+        self.label.pos = self.pos
+        self.size = Window.width*.3,Window.width*.1
+        for key, value in kwargs.iteritems():
+           if key == "_parent":
+               self._parent = value
 
+class GUI(Widget):
+    # main UI widget
     def gameStart(self): 
         self.started = True
         l = Label(text='NBack', font_name="assets/Montserrat-Bold.ttf") #give the game a title
@@ -141,22 +156,18 @@ class GUI(Widget):
         super(GUI, self).__init__(**kwargs)
         self.started = False
         # stimulus
-        self.stimulus = Label(font_name="assets/Montserrat-Bold.ttf")
-        self.stimulus.x = Window.width/2 - self.stimulus.width/2
-        self.stimulus.y = Window.height/2 - self.stimulus.height/2 
-        self.stimulus.text = "Touch to start"
+        self.stimulus = Stimulus(_parent=self) 
+        self.stimulus.label.text = "Touch to start"
         self.add_widget(self.stimulus)
 
     def game_over(self):
         self.clear_widgets()
         self.parent.remove_widget(self.oneButton)
         self.parent.remove_widget(self.twoButton)
-        self.parent.remove_widget(self.thgit reeButton)
+        self.parent.remove_widget(self.threeButton)
         # remake stimulus
-        self.stimulus = Label(font_name="assets/Montserrat-Bold.ttf")
-        self.stimulus.x = Window.width/2 - self.stimulus.width/2
-        self.stimulus.y = Window.height/2 - self.stimulus.height/2 
-        self.stimulus.text = "Touch to restart"
+        self.stimulus = Stimulus(_parent=self)
+        self.stimulus.label.text = "Touch to restart"
         self.add_widget(self.stimulus)
         self.started = False
 
@@ -189,7 +200,7 @@ class GUI(Widget):
                 self.stimulus_store.pop(0)
             self.stimulus_store.append(new_stim)
             verboseprint(spec["verbose"], self.stimulus_store, len(self.stimulus_store))
-            self.stimulus.text = new_stim
+            self.stimulus.label.text = new_stim
             return new_stim
 
     #Every time the screen is touched, the on_touch_down function is called
