@@ -5,6 +5,7 @@ import time
 
 from kivy.app import App
 from kivy.uix.widget import Widget
+from kivy.uix.image import Image
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.core.window import Window
@@ -88,6 +89,8 @@ class WidgetDrawer(Widget):
         self.x = xpos
         self.y = ypos
 
+
+
 class MyButton(Button):
     #class used to get uniform button styles
     def __init__(self, **kwargs):
@@ -149,6 +152,7 @@ class GUI(Widget):
         self.parent.add_widget(self.oneButton)
         self.parent.add_widget(self.twoButton)
         self.parent.add_widget(self.threeButton)
+        self.drawHeart()
 
 
 
@@ -172,8 +176,15 @@ class GUI(Widget):
         self.add_widget(self.stimulus)
         self.started = False
 
-    # def drawHeart(self):
-    #     self.hearts=
+    def drawHeart(self):
+        print "trying to draw heart"
+        hearts = WidgetDrawer(imageStr="./assets/heart.png")
+        # hearts.norm_image_size
+        hearts.pos=Window.width*0.9,Window.height*0.9
+        # hearts.size=1000,1000
+        # hearts.bg_rect = Rectangle(source="./heart.png", pos=self.pos, size=self.size)
+        self.add_widget(hearts)
+
 
     def num_points(self,response):
         if response==0:
