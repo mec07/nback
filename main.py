@@ -168,6 +168,7 @@ class GUI(Widget):
         self.parent.add_widget(self.oneButton)
         self.parent.add_widget(self.twoButton)
         self.parent.add_widget(self.threeButton)
+        self.hearts=[]
         self.drawHeart()
 
     #this is the main widget that contains the game. 
@@ -191,12 +192,11 @@ class GUI(Widget):
 
     def drawHeart(self):
         print "trying to draw heart"
-        hearts = WidgetDrawer(imageStr="./assets/heart.png")
-        # hearts.norm_image_size
-        hearts.pos=Window.width*0.9,Window.height*0.9
-        # hearts.size=1000,1000
-        # hearts.bg_rect = Rectangle(source="./heart.png", pos=self.pos, size=self.size)
-        self.add_widget(hearts)
+        for ii in range(self.lives):
+            tmpheart = WidgetDrawer(imageStr="./assets/heart.png")
+            tmpheart.pos=Window.width*(0.8+0.05*ii),Window.height*(0.9)
+            self.hearts.append(tmpheart)
+            self.add_widget(tmpheart)
 
 
     def num_points(self,response):
@@ -209,7 +209,10 @@ class GUI(Widget):
         # Evaluate the user's response
         answer = evaluate_response(spec['verbose'],self.stimulus_store,response)
         if not answer:
-            self.lives-=1    
+            self.lives-=1 
+            self.remove_widget(self.hearts[0])
+            self.hearts.pop(0)
+
         # update score based upon evaluation
         if answer:
             self.score+=self.num_points(response)
