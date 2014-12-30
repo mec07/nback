@@ -4,6 +4,7 @@ import sys
 import time
 
 from kivy.app import App
+from kivy.animation import Animation
 from kivy.uix.widget import Widget
 from kivy.uix.image import Image
 from kivy.uix.label import Label
@@ -16,6 +17,8 @@ from random import randint
 from generate_stimuli import *
 from evaluation import *
 from Verbosity import *
+
+from DragNDropWidget import *
 
 from kivy.config import Config
 Config.set('graphics','resizable',0) #don't make the app re-sizeable
@@ -111,7 +114,7 @@ class MyButton(Button):
 
         self.bind(on_release=press_button) 
 
-class Stimulus(Widget):
+class Stimulus(DragNDropWidget):
     def __init__(self, **kwargs):
         super(Stimulus, self).__init__(**kwargs)
         self.label = Label(text="[color=ff0000]World[/color]", markup=True)
@@ -126,6 +129,14 @@ class Stimulus(Widget):
            if key == "_parent":
                self._parent = value
 
+class CentreLabel(Label):
+    def __init__(self, **kwargs):
+        super(CentreLabel, self).__init__(**kwargs)
+        self.x = Window.width/2 - self.width/2
+        self.y = Window.height/2 - self.height/2
+        self.font_name="assets/Montserrat-Bold.ttf"
+        
+
 class GUI(Widget):
     # main UI widget
     def gameStart(self): 
@@ -133,7 +144,12 @@ class GUI(Widget):
         l = Label(text='NBack', font_name="assets/Montserrat-Bold.ttf") #give the game a title
         l.x = Window.width/2 - l.width/2
         l.y = Window.height*0.8
+        if self.start_label:
+            self.remove_widget(self.start_label)
+            self.start_label = None
         self.add_widget(l) #add the label to the screen
+        self.stimulus = Stimulus(_parent=self)
+        self.parent.add_widget(self.stimulus)
         # stimulus array
         self.stimulus_store = []
         # score_display
@@ -154,26 +170,23 @@ class GUI(Widget):
         self.parent.add_widget(self.threeButton)
         self.drawHeart()
 
-
-
     #this is the main widget that contains the game. 
     def __init__(self, **kwargs):
         super(GUI, self).__init__(**kwargs)
         self.started = False
         # stimulus
-        self.stimulus = Stimulus(_parent=self) 
-        self.stimulus.label.text = "Touch to start"
-        self.add_widget(self.stimulus)
+        self.start_label = CentreLabel(_parent=self, text="Touch to start", pos=Window.center)
+        self.add_widget(self.start_label)
 
     def game_over(self):
         self.clear_widgets()
+        self.parent.remove_widget(self.stimulus)
         self.parent.remove_widget(self.oneButton)
         self.parent.remove_widget(self.twoButton)
         self.parent.remove_widget(self.threeButton)
         # remake stimulus
-        self.stimulus = Stimulus(_parent=self)
-        self.stimulus.label.text = "Touch to restart"
-        self.add_widget(self.stimulus)
+        self.start_label = CentreLabel(_parent=self, text="Touch to restart")
+        self.add_widget(self.start_label)
         self.started = False
 
     def drawHeart(self):
@@ -217,6 +230,10 @@ class GUI(Widget):
 
     #Every time the screen is touched, the on_touch_down function is called
     def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            touch.grab(self.oneButton)
+            print "yum"
+
         if not self.started:
             self.gameStart()
             self.end_turn(0)
