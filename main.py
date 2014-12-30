@@ -160,6 +160,9 @@ class GUI(Widget):
         self.add_widget(self.stimulus)
         self.started = False
 
+    # def drawHeart(self):
+    #     self.hearts=
+
     def num_points(self,response):
         if response==0:
             return 0
