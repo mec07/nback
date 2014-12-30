@@ -77,6 +77,7 @@ def end_turn(response):
         stimulus_store.pop(0)
     stimulus_store.append(new_stim)
     verboseprint(spec["verbose"], stimulus_store, len(stimulus_store))
+    stimulus.text = new_stim
     return new_stim
 
 # ----------- Classes --------------------
@@ -133,7 +134,7 @@ class MyButton(Button):
         def press_button(obj):
         #this function will be called whenever the reset button is pushed
             print '%s button pushed' % self.num
-            stimulus.text = end_turn(self.num)
+            end_turn(self.num)
 
         self.bind(on_release=press_button) 
 
@@ -164,10 +165,10 @@ class GUI(Widget):
     def on_touch_down(self, touch):
         if not self.started:
             self.started = True
-            stimulus.text = end_turn(0)
+            end_turn(0)
             self.gameStart()
         else:
-            stimulus.text = end_turn(0)
+            end_turn(0)
 
     def update(self,dt):
         #This update function is the main update function for the game
