@@ -111,7 +111,7 @@ class GUI(Widget):
 
     def gameStart(self): 
         self.started = True
-        l = Label(text='NBack') #give the game a title
+        l = Label(text='NBack', font_name="assets/Montserrat-Bold.ttf") #give the game a title
         l.x = Window.width/2 - l.width/2
         l.y = Window.height*0.8
         self.add_widget(l) #add the label to the screen
@@ -144,7 +144,7 @@ class GUI(Widget):
         super(GUI, self).__init__(**kwargs)
         self.started = False
         # stimulus
-        self.stimulus = Label()
+        self.stimulus = Label(font_name="assets/Montserrat-Bold.ttf")
         self.stimulus.x = Window.width/2 - self.stimulus.width/2
         self.stimulus.y = Window.height/2 - self.stimulus.height/2 
         self.stimulus.text = "Touch to start"
@@ -156,7 +156,7 @@ class GUI(Widget):
         self.parent.remove_widget(self.twoButton)
         self.parent.remove_widget(self.threeButton)
         # remake stimulus
-        self.stimulus = Label()
+        self.stimulus = Label(font_name="assets/Montserrat-Bold.ttf")
         self.stimulus.x = Window.width/2 - self.stimulus.width/2
         self.stimulus.y = Window.height/2 - self.stimulus.height/2 
         self.stimulus.text = "Touch to restart"
