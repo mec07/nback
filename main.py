@@ -22,7 +22,6 @@ from evaluation import *
 from Verbosity import *
 
 from DragNDropWidget import *
-
 from kivy.config import Config
 Config.set('graphics','resizable',0) #don't make the app re-sizeable
 #Graphics fix
@@ -189,7 +188,6 @@ class GUI(Widget):
         self.buttons = []
         self.lives = spec["num_lives"]
         # draw elements
-        self.drawHeart()
         self.started = True
         l = Label(text='NBack', font_name="assets/Montserrat-Bold.ttf") #give the game a title
         l.x = Window.width/2 - l.width/2
