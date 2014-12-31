@@ -94,10 +94,10 @@ class WidgetDrawer(Widget):
 
 
 
-class MyButton(Button):
+class AnswerButton(Button):
     #class used to get uniform button styles
     def __init__(self, **kwargs):
-        super(MyButton, self).__init__(**kwargs)
+        super(AnswerButton, self).__init__(**kwargs)
  #all we're doing is setting the font size. more can be done later
         self.font_size = Window.width*0.018
         self.size = Window.width*.3,Window.width*.1
@@ -117,6 +117,9 @@ class MyButton(Button):
 class Stimulus(DragNDropWidget):
     def __init__(self, **kwargs):
         super(Stimulus, self).__init__(**kwargs)
+        with self.canvas:
+            self.colour = Color(0,0.5,0,1)
+            self.bg_rect = Rectangle(pos=self.pos, size=self.size)
         self.label = Label(text="[color=ff0000]World[/color]", markup=True)
         self.label.font_name="assets/Montserrat-Bold.ttf"
         self.add_widget(self.label)
@@ -128,6 +131,16 @@ class Stimulus(DragNDropWidget):
         for key, value in kwargs.iteritems():
            if key == "_parent":
                self._parent = value
+        self.remove_on_drag = True
+        self.drop_func = self.on_drop
+        for i in self._parent.buttons:
+            self.droppable_zone_objects.append(i)
+        Clock.schedule_interval(self.update, 1.0/60.0)
+    def update(self, args):
+        self.label.pos = self.pos
+        self.bg_rect.pos = self.pos
+    def on_drop(self):
+        print "yarr"
 
 class CentreLabel(Label):
     def __init__(self, **kwargs):
@@ -140,6 +153,11 @@ class CentreLabel(Label):
 class GUI(Widget):
     # main UI widget
     def gameStart(self): 
+        self.hearts = []
+        self.buttons = []
+        self.lives = spec["num_lives"]
+        # draw elements
+        self.drawHeart()
         self.started = True
         l = Label(text='NBack', font_name="assets/Montserrat-Bold.ttf") #give the game a title
         l.x = Window.width/2 - l.width/2
@@ -147,7 +165,13 @@ class GUI(Widget):
         if self.start_label:
             self.remove_widget(self.start_label)
             self.start_label = None
-        self.add_widget(l) #add the label to the screen
+        self.add_widget(l)
+        # create an array for each button's number
+        arr = [i for i in range(1,(spec["max_nback"] + 1))] 
+        for no in arr:
+            self.buttons.append(AnswerButton(_parent=self,text=str(no), num=no, pos=(Window.left*0.1,Window.height*(no*0.2))))
+            self.parent.add_widget(self.buttons[-1])
+        # create stimulus
         self.stimulus = Stimulus(_parent=self)
         self.parent.add_widget(self.stimulus)
         # stimulus array
@@ -159,17 +183,6 @@ class GUI(Widget):
         self.score_display.y = Window.height*0.9 - ((self.score_display.width/2)*2)
         self.add_widget(self.score_display)
         # lives
-        self.lives = spec["num_lives"]
-        self.oneButton = MyButton(_parent=self,text='One', num=1, pos=(Window.left*0.1,Window.height*0.8))
-        self.twoButton = MyButton(_parent=self,text='Two', num=2, pos=(Window.left*0.1,Window.height*0.6))
-        self.threeButton = MyButton(_parent=self,text='Three', num=3, pos=(Window.left*0.1,Window.height*0.4))
-        #*** It's important that the parent gets the button so you can click on it
-        #otherwise you can't click through the main game's canvas
-        self.parent.add_widget(self.oneButton)
-        self.parent.add_widget(self.twoButton)
-        self.parent.add_widget(self.threeButton)
-        self.hearts=[]
-        self.drawHeart()
 
     #this is the main widget that contains the game. 
     def __init__(self, **kwargs):

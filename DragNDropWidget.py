@@ -177,7 +177,7 @@ class DragNDropWidget(Widget):
 
     def reborn(self, widget, anim):
         self.deparent()
-        self._old_parent.add_widget(self, index=self._old_index)
+        self._old_parent.add_widget(self)
 
     def reparent(self, widget):
         parent = widget.parent
