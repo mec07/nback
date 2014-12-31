@@ -1,13 +1,11 @@
 import kivy 
 import ipdb
 import sys
-<<<<<<< HEAD
-import time
 
-=======
+import time
 import os
 import json
->>>>>>> 280ec4e048a4e2b69f8894910ae606790d4a55c3
+
 from kivy.app import App
 from kivy.animation import Animation
 from kivy.uix.widget import Widget
