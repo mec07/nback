@@ -38,7 +38,7 @@ spec = {
     "verbose":1,
     "num_high_scores": 10, 
     "highscorefile":"highscores.txt",
-    "max_nback": 3, 
+    "max_nback": 5, 
     "type_stimulus": "animals", 
     "present_stimuli": 10,
     "num_stimuli": 5,
@@ -48,6 +48,10 @@ spec = {
     "gamename":"NBACK",
     "max_level":5
 }
+
+num2words_dict = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine', 10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen', 15: 'Fifteen', 16: 'Sixteen', 17: 'Seventeen', 18: 'Eighteen', 19: 'Nineteen'}
+
+
 
 
 
@@ -67,6 +71,7 @@ class WidgetDrawer(Widget):
     #objects of this class must be initiated with an image string
     #;You can use **kwargs to let your functions take an arbitrary number of keyword arguments
     #kwargs ; keyword arguments
+
     def __init__(self, imageStr, **kwargs): 
         super(WidgetDrawer, self).__init__(**kwargs) #this is part of the **kwargs notation
         #if you haven't seen with before, here's a link http://effbot.org/zone/python-with-statement.html     
@@ -193,11 +198,22 @@ class GUI(Widget):
             self.remove_widget(self.start_label)
             self.start_label = None
         self.add_widget(l)
-        # create an array for each button's number
-        arr = [i for i in range(1,(spec["max_nback"] + 1))] 
-        for no in arr:
-            self.buttons.append(AnswerButton(_parent=self,text=str(no), num=no, pos=(Window.left*0.1,Window.height*(no*0.2))))
-            self.parent.add_widget(self.buttons[-1])
+        # lives
+        self.lives = spec["num_lives"]
+        # buttons
+        self.buttons = []
+        for ii in range(spec["max_nback"]):
+            tmpbutton = AnswerButton(_parent=self,text=str(num2words_dict[ii+1]), num=ii+1, pos=(Window.left*0.1,Window.height*(0.8-ii*0.15) ) )
+            self.buttons.append(tmpbutton)
+            #*** It's important that the parent gets the button so you can click on it
+            #otherwise you can't click through the main game's canvas
+            self.parent.add_widget(tmpbutton)
+        self.hearts=[]
+        self.drawHeart()
+        self.open_highscore_file()
+        self.highscorelabel=Label(text="Highscore: "+str(self.highscores["scores"][0]))
+        self.highscorelabel.pos=Window.width*0.8,Window.height*0.05
+        self.add_widget(self.highscorelabel)
         # create stimulus
         self.stimulus = Stimulus(_parent=self)
         self.parent.add_widget(self.stimulus)
@@ -221,9 +237,9 @@ class GUI(Widget):
     def game_over(self):
         self.clear_widgets()
         self.parent.remove_widget(self.stimulus)
-        self.parent.remove_widget(self.oneButton)
-        self.parent.remove_widget(self.twoButton)
-        self.parent.remove_widget(self.threeButton)
+        for ii in range(spec["max_nback"]):
+            # ipdb.set_trace()
+            self.parent.remove_widget(self.buttons[ii])
         # remake stimulus
         self.start_label = CentreLabel(_parent=self, text="Touch to restart")
         self.add_widget(self.start_label)
@@ -240,7 +256,6 @@ class GUI(Widget):
 
 
     def drawHeart(self):
-        print "trying to draw heart"
         for ii in range(self.lives):
             tmpheart = WidgetDrawer(imageStr="./assets/heart.png")
             tmpheart.pos=Window.width*(0.8+0.05*ii),Window.height*(0.9)
@@ -298,6 +313,8 @@ class GUI(Widget):
         #events are setup here as well
         # everything here is executed every 60th of a second.
         pass
+
+
 
 
 class ClientApp(App):
