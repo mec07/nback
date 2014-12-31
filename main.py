@@ -1,12 +1,17 @@
 import kivy 
 import ipdb
 import sys
+<<<<<<< HEAD
 import time
 
+=======
+import os
+import json
+>>>>>>> 280ec4e048a4e2b69f8894910ae606790d4a55c3
 from kivy.app import App
 from kivy.animation import Animation
 from kivy.uix.widget import Widget
-from kivy.uix.image import Image
+from kivy.uix.textinput import TextInput
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.core.window import Window
@@ -152,6 +157,30 @@ class CentreLabel(Label):
 
 class GUI(Widget):
     # main UI widget
+    # def on_enter(instance,widget):
+    #     print "user pressed enter"
+
+    # def enter_name(self):
+    #     # Example on how to input text
+    #     self.textinput = TextInput(text="Enter name:",multiline=False)
+    #     self.textinput.bind(on_text_validate=self.on_enter)
+    #     self.parent.add_widget(self.textinput)
+    def open_highscore_file(self):
+        # Open the highscore file
+        if os.path.isfile(spec['highscorefile']): # make sure that it already exists
+            with open(spec['highscorefile'],'r') as f:
+                self.highscores=json.load(f)
+            # If there is nothing in the highscore file, just enter in a zero score
+            if self.highscores['scores']==None:
+                self.highscores['scores']=[0]
+                self.highscores['names']=[":)"]
+        # If there is no highscore file then just use a zero value
+        else:
+            self.highscores = {}
+            self.highscores['scores']=[0]
+            self.highscores['names']=[":)"]
+
+
     def gameStart(self): 
         self.hearts = []
         self.buttons = []
@@ -182,7 +211,6 @@ class GUI(Widget):
         self.score_display.x = Window.width*0.5 - self.score_display.width/2
         self.score_display.y = Window.height*0.9 - ((self.score_display.width/2)*2)
         self.add_widget(self.score_display)
-        # lives
 
     #this is the main widget that contains the game. 
     def __init__(self, **kwargs):
@@ -202,6 +230,16 @@ class GUI(Widget):
         self.start_label = CentreLabel(_parent=self, text="Touch to restart")
         self.add_widget(self.start_label)
         self.started = False
+
+        # Is this a new highscore?
+        if self.score > self.highscores["scores"][0]:
+            print "New Highscore!!"
+            self.highscores["scores"][0]=self.score
+            # If so then update the highscore file
+            with open(spec['highscorefile'],'w') as f:
+                json.dump(self.highscores,f)
+
+
 
     def drawHeart(self):
         print "trying to draw heart"
@@ -237,7 +275,7 @@ class GUI(Widget):
         else:
             # Generate a new stimulus and store it
             new_stim = generate_stimulus(spec["type_stimulus"],spec["num_stimuli"])
-            if len(self.stimulus_store) >= spec["max_nback"]:
+            if len(self.stimulus_store) > spec["max_nback"]:
                 self.stimulus_store.pop(0)
             self.stimulus_store.append(new_stim)
             verboseprint(spec["verbose"], self.stimulus_store, len(self.stimulus_store))
