@@ -140,14 +140,17 @@ class Stimulus(DragNDropWidget):
                self._parent = value
         self.remove_on_drag = True
         self.drop_func = self.on_drop
+        # what can it be dropped on?
         for i in self._parent.buttons:
             self.droppable_zone_objects.append(i)
+        # update it regularly so it repaints when stuck to cursor
         Clock.schedule_interval(self.update, 1.0/60.0)
     def update(self, args):
         self.label.pos = self.pos
         self.bg_rect.pos = self.pos
     def on_drop(self):
-        print "yarr"
+        self._parent.end_turn(self.dropped_obj.num)
+        print self.dropped_obj.num
 
 class CentreLabel(Label):
     def __init__(self, **kwargs):
