@@ -134,7 +134,6 @@ class Stimulus(DragNDropWidget):
         self.x = Window.width/2 - self.width/2
         self.y = Window.height/2 - self.height/2
         self.label.pos = self.pos
-        self.size = Window.width*.3,Window.width*.1
         for key, value in kwargs.iteritems():
            if key == "_parent":
                self._parent = value
@@ -148,6 +147,8 @@ class Stimulus(DragNDropWidget):
     def update(self, args):
         self.label.pos = self.pos
         self.bg_rect.pos = self.pos
+        # ugly hack to keep size from inheriting from parent
+        self.size = (100,100)
     def on_drop(self):
         gui = self._parent
         gui.new_stimulus()
@@ -305,7 +306,6 @@ class GUI(Widget):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             touch.grab(self.oneButton)
-            print "yum"
 
         if not self.started:
             self.gameStart()

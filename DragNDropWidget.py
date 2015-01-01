@@ -81,7 +81,6 @@ class DragNDropWidget(Widget):
         if self._dragged and self._dragable:
             x = touch.x
             y = touch.y
-
             try:
                 if touch.x < self.min_x:
                     x = self.min_x
@@ -93,7 +92,14 @@ class DragNDropWidget(Widget):
                     y = self.max_y
             except AttributeError:
                 pass
+            x -= self.width/2
+            y -= self.height/2
             self.pos = (x, y)
+
+    def find_centre(self):
+        x = self.x + self.width/2
+        y = self.y + self.height/2
+        return (x,y)
 
     def easy_access_dnd(self, function_to_do, function_to_do_out, arguments = [], bind_functions = []):
         """
@@ -152,8 +158,9 @@ class DragNDropWidget(Widget):
         if self._dragged and self._dragable:
             self.opacity = 1.0
             dropped_ok = False
+            centre_anchor = self.find_centre()
             for obj in self.droppable_zone_objects:
-                if obj.collide_point(*self.pos):
+                if obj.collide_point(*centre_anchor):
                     dropped_ok = True
                     self.dropped_obj = obj
             if dropped_ok:
