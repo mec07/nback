@@ -107,7 +107,7 @@ class AnswerButton(Button):
         super(AnswerButton, self).__init__(**kwargs)
  #all we're doing is setting the font size. more can be done later
         self.font_size = Window.width*0.018
-        self.size = Window.width*.3,Window.width*.1
+        self.size = Window.width*.25,Window.width*.1
         for key, value in kwargs.iteritems():      # styles is a regular dictionary
             if key == "num":
                 self.num = value
@@ -207,11 +207,14 @@ class GUI(Widget):
         # buttons
         self.buttons = []
         for ii in range(spec["max_nback"]):
-            tmpbutton = AnswerButton(_parent=self,text=str(num2words_dict[ii+1]), num=ii+1, pos=(Window.left*0.1,Window.height*(0.8-ii*0.15) ) )
+            tmpbutton = AnswerButton(_parent=self,text=str(num2words_dict[ii+1]), num=ii+1, pos=(Window.width*0.05,Window.height*(0.8-ii*0.15) ) )
             self.buttons.append(tmpbutton)
-            #*** It's important that the parent gets the button so you can click on it
-            #otherwise you can't click through the main game's canvas
             self.parent.add_widget(tmpbutton)
+        # pass button
+        self.pass_button = AnswerButton(_parent=self,text="Pass", num=0, pos=(Window.width*0.7,Window.height/2))
+        self.buttons.append(self.pass_button)
+        self.parent.add_widget(self.pass_button)
+        # hearts
         self.hearts=[]
         self.drawHeart()
         self.open_highscore_file()
@@ -225,7 +228,7 @@ class GUI(Widget):
         self.score = 0
         self.score_display = Label(text="0")
         self.score_display.x = Window.width*0.5 - self.score_display.width/2
-        self.score_display.y = Window.height*0.9 - ((self.score_display.width/2)*2)
+        self.score_display.y = Window.height*0.9 - ((self.score_display.width/2)*2.5)
         self.add_widget(self.score_display)
 
     #this is the main widget that contains the game. 
@@ -251,7 +254,6 @@ class GUI(Widget):
         self.start_label = CentreLabel(_parent=self, text="Touch to restart")
         self.add_widget(self.start_label)
         self.started = False
-
         # Is this a new highscore?
         if self.score > self.highscores["scores"][0]:
             print "New Highscore!!"
