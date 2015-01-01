@@ -149,8 +149,10 @@ class Stimulus(DragNDropWidget):
         self.label.pos = self.pos
         self.bg_rect.pos = self.pos
     def on_drop(self):
-        self._parent.end_turn(self.dropped_obj.num)
-        print self.dropped_obj.num
+        gui = self._parent
+        gui.new_stimulus()
+        gui.end_turn(self.dropped_obj.num)
+        self.remove_widget(self)
 
 class CentreLabel(Label):
     def __init__(self, **kwargs):
@@ -215,9 +217,7 @@ class GUI(Widget):
         self.highscorelabel=Label(text="Highscore: "+str(self.highscores["scores"][0]))
         self.highscorelabel.pos=Window.width*0.8,Window.height*0.05
         self.add_widget(self.highscorelabel)
-        # create stimulus
-        self.stimulus = Stimulus(_parent=self)
-        self.parent.add_widget(self.stimulus)
+        self.new_stimulus()
         # stimulus array
         self.stimulus_store = []
         # score_display
@@ -234,6 +234,11 @@ class GUI(Widget):
         # stimulus
         self.start_label = CentreLabel(_parent=self, text="Touch to start", pos=Window.center)
         self.add_widget(self.start_label)
+
+    def new_stimulus(self):
+        # create stimulus
+        self.stimulus = Stimulus(_parent=self)
+        self.parent.add_widget(self.stimulus)
 
     def game_over(self):
         self.clear_widgets()
