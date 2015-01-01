@@ -27,6 +27,7 @@ Config.set('graphics','resizable',0) #don't make the app re-sizeable
 #Graphics fix
  #this fixes drawing issues on some phones
 Window.clearcolor = (0,0,0,1.) 
+Window.size = (800,450) # must be this ratio to make it closer to the most common android screen ratio of 16:9, can be changed after we perfect the look on android to something that is nicer for desktops, or if we need more resolution 
 
 # ----------- Global objects -------------
 
