@@ -1,5 +1,5 @@
 import kivy 
-import ipdb
+#import ipdb
 import sys
 
 import time
@@ -50,7 +50,11 @@ spec = {
 
 num2words_dict = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine', 10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen', 15: 'Fifteen', 16: 'Sixteen', 17: 'Seventeen', 18: 'Eighteen', 19: 'Nineteen'}
 
+start_text = '''
+Welcome to nBack!
 
+The skill of this game is in recognising and remembering patterns.
+'''
 
 
 
@@ -236,7 +240,7 @@ class GUI(Widget):
         super(GUI, self).__init__(**kwargs)
         self.started = False
         # stimulus
-        self.start_label = CentreLabel(_parent=self, text="Touch to start", pos=Window.center)
+        self.start_label = CentreLabel(_parent=self, text=start_text, pos=Window.center)
         self.add_widget(self.start_label)
 
     def new_stimulus(self):
@@ -247,7 +251,7 @@ class GUI(Widget):
     def game_over(self):
         self.clear_widgets()
         self.parent.remove_widget(self.stimulus)
-        for ii in range(spec["max_nback"]):
+        for ii in range(spec["max_nback"] + 1): # added one for pass button
             # ipdb.set_trace()
             self.parent.remove_widget(self.buttons[ii])
         # remake stimulus
@@ -319,9 +323,6 @@ class GUI(Widget):
         #events are setup here as well
         # everything here is executed every 60th of a second.
         pass
-
-
-
 
 class ClientApp(App):
     def build(self):
