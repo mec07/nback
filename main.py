@@ -312,8 +312,6 @@ class GUI(Widget):
         if not self.started:
             self.gameStart()
             self.end_turn(0)
-        else:
-            self.end_turn(0)
 
     def update(self,dt):
         #This update function is the main update function for the game
