@@ -1,5 +1,5 @@
 import kivy 
-#import ipdb
+import ipdb
 import sys
 
 import time
@@ -15,7 +15,8 @@ from kivy.uix.button import Button
 from kivy.core.window import Window
 from kivy.properties import NumericProperty
 from kivy.clock import Clock
-from kivy.graphics import Rectangle, Color, Ellipse
+from kivy.graphics import Rectangle, Color, Ellipse, Line
+from kivy.utils import get_color_from_hex
 from random import randint
 from generate_stimuli import *
 from evaluation import *
@@ -23,11 +24,12 @@ from Verbosity import *
 
 from DragNDropWidget import *
 from kivy.config import Config
-Config.set('graphics','resizable',0) #don't make the app re-sizeable
+#Config.set('graphics','resizable',0) #don't make the app re-sizeable
 #Graphics fix
  #this fixes drawing issues on some phones
 Window.clearcolor = (0,0,0,1.) 
-#Window.size = (800,450) must be this ratio to make it closer to the most common android screen ratio of 16:9, can be changed after we perfect the look on android to something that is nicer for desktops, or if we need more resolution 
+# FOR ANDROID DEBUGGING - this is to make it closer to the most common android screen ratio of 16:9, can be changed after we perfect the look on android to something that is nicer for desktops, or if we need more resolution
+Window.size = (1600,900)  
 
 # ----------- Global objects -------------
 
@@ -49,8 +51,9 @@ spec = {
     "max_level":5
 }
 
-drop_zone_size = (100,80)
-card_size = (80,60)
+card_size_raw = [150,60]
+drop_zone_size = (card_size_raw[0] + (card_size_raw[0] * 0.2),card_size_raw[1]+ (card_size_raw[1] * 0.3))
+card_size = (card_size_raw[0],card_size_raw[1])
 
 num2words_dict = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine', 10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen', 15: 'Fifteen', 16: 'Sixteen', 17: 'Seventeen', 18: 'Eighteen', 19: 'Nineteen'}
 
@@ -133,10 +136,15 @@ class AnswerButton(Button):
 class Stimulus(DragNDropWidget):
     def __init__(self, **kwargs):
         super(Stimulus, self).__init__(**kwargs)
+        self.border_width = 5
         # background
         with self.canvas:
-            self.colour = Color(0,0.5,0,1)
-            self.bg_rect = Rectangle(pos=self.pos, size=card_size)
+            border_colour = get_color_from_hex("#111111")
+            bg_colour = get_color_from_hex("#0b6000")
+            self.border_colour = Color(border_colour[0],border_colour[1],border_colour[2],border_colour[3])
+            self.border = Rectangle(size=(card_size_raw[0]+(self.border_width*2),card_size_raw[1]+(self.border_width*2)))
+            self.colour = Color(bg_colour[0],bg_colour[1],bg_colour[2],bg_colour[3])
+            self.bg_rect = Rectangle(source='assets/sign.png',pos=self.pos, size=card_size)
         self.label = Label(text="[color=ff0000]World[/color]", markup=True)
         self.label.font_name="assets/Montserrat-Bold.ttf"
         self.add_widget(self.label)
@@ -157,9 +165,11 @@ class Stimulus(DragNDropWidget):
         # update it regularly so it repaints when stuck to cursor
         Clock.schedule_interval(self.update, 1.0/60.0)
     def update(self, args):
-        self.label_centre = (self.x - 10,self.y - 20)
+        # this is just weird. I don't know why I need to add a sixth to it, or any of why this is a problem :(
+        self.label_centre = (self.x + (card_size_raw[0] * 0.15),self.y - 20)
         self.label.pos = self.label_centre
         self.bg_rect.pos = self.pos
+        self.border.pos = (self.x-self.border_width,self.y-self.border_width)
         # ugly hack to keep size from inheriting from parent
         self.size = card_size
         #debugging:
@@ -284,6 +294,7 @@ class GUI(Widget):
             tmpheart = WidgetDrawer(imageStr="./assets/heart.png")
             tmpheart.pos=Window.width*(0.8+0.05*ii),Window.height*(0.9)
             self.hearts.append(tmpheart)
+            print tmpheart.size
             self.add_widget(tmpheart)
 
 
