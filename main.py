@@ -24,12 +24,12 @@ from Verbosity import *
 
 from DragNDropWidget import *
 from kivy.config import Config
-#Config.set('graphics','resizable',0) #don't make the app re-sizeable
 #Graphics fix
  #this fixes drawing issues on some phones
 Window.clearcolor = (0,0,0,1.) 
 # FOR ANDROID DEBUGGING - this is to make it closer to the most common android screen ratio of 16:9, can be changed after we perfect the look on android to something that is nicer for desktops, or if we need more resolution
 #Window.size = (1600,900)  
+#Config.set('graphics','resizable',0) #don't make the app re-sizeable
 
 # ----------- Global objects -------------
 
@@ -51,7 +51,7 @@ spec = {
     "max_level":5
 }
 
-card_size_raw = [150,60]
+card_size_raw = [150,90]
 drop_zone_size = (card_size_raw[0] + (card_size_raw[0] * 0.2),card_size_raw[1]+ (card_size_raw[1] * 0.3))
 card_size = (card_size_raw[0],card_size_raw[1])
 
@@ -167,7 +167,7 @@ class Stimulus(DragNDropWidget):
         Clock.schedule_interval(self.update, 1.0/60.0)
     def update(self, args):
         # this is just weird. I don't know why I need to add a sixth to it, or any of why this is a problem :(
-        self.label_centre = (self.x + (card_size_raw[0] * 0.15),self.y - 20)
+        self.label_centre = (self.x + (card_size_raw[0] * 0.15),self.y - 20 * 0.15)
         self.label.pos = self.label_centre
         self.bg_rect.pos = self.pos
         self.border.pos = (self.x-self.border_width,self.y-self.border_width)
