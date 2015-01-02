@@ -1,5 +1,5 @@
 import kivy 
-import ipdb
+#import ipdb
 import sys
 
 import time
@@ -29,7 +29,7 @@ from kivy.config import Config
  #this fixes drawing issues on some phones
 Window.clearcolor = (0,0,0,1.) 
 # FOR ANDROID DEBUGGING - this is to make it closer to the most common android screen ratio of 16:9, can be changed after we perfect the look on android to something that is nicer for desktops, or if we need more resolution
-Window.size = (1600,900)  
+#Window.size = (1600,900)  
 
 # ----------- Global objects -------------
 
@@ -149,8 +149,9 @@ class Stimulus(DragNDropWidget):
         self.label.font_name="assets/Montserrat-Bold.ttf"
         self.add_widget(self.label)
         self.font_size = Window.width*0.018
-        self.x = Window.width/2 - self.width/2
-        self.y = Window.height/2 - self.height/2
+        self.x = Window.width/2 - card_size_raw[0]/2
+        print Window.width
+        self.y = Window.height/2 - card_size_raw[1]/2
         # hardcoding for now because it won't centre properly!
         self.label_centre = (self.x - 10,self.y - 20)
         self.label.pos = self.label_centre
