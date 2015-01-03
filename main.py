@@ -15,7 +15,8 @@ from kivy.uix.button import Button
 from kivy.core.window import Window
 from kivy.properties import NumericProperty
 from kivy.clock import Clock
-from kivy.graphics import Rectangle, Color, Ellipse
+from kivy.graphics import Rectangle, Color, Ellipse, Line
+from kivy.utils import get_color_from_hex
 from random import randint
 from generate_stimuli import *
 from evaluation import *
@@ -23,10 +24,12 @@ from Verbosity import *
 
 from DragNDropWidget import *
 from kivy.config import Config
-Config.set('graphics','resizable',0) #don't make the app re-sizeable
 #Graphics fix
  #this fixes drawing issues on some phones
 Window.clearcolor = (0,0,0,1.) 
+# FOR ANDROID DEBUGGING - this is to make it closer to the most common android screen ratio of 16:9, can be changed after we perfect the look on android to something that is nicer for desktops, or if we need more resolution
+#Window.size = (1600,900)  
+#Config.set('graphics','resizable',0) #don't make the app re-sizeable
 
 # ----------- Global objects -------------
 
@@ -47,6 +50,10 @@ spec = {
     "gamename":"NBACK",
     "max_level":5
 }
+
+card_size_raw = [150,90]
+drop_zone_size = (card_size_raw[0] + (card_size_raw[0] * 0.2),card_size_raw[1]+ (card_size_raw[1] * 0.3))
+card_size = (card_size_raw[0],card_size_raw[1])
 
 num2words_dict = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine', 10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen', 15: 'Fifteen', 16: 'Sixteen', 17: 'Seventeen', 18: 'Eighteen', 19: 'Nineteen'}
 
@@ -111,7 +118,8 @@ class AnswerButton(Button):
         super(AnswerButton, self).__init__(**kwargs)
  #all we're doing is setting the font size. more can be done later
         self.font_size = Window.width*0.018
-        self.size = Window.width*.25,Window.width*.1
+        self.size = drop_zone_size
+        self.background_normal = "assets/drop_box_b.png"
         for key, value in kwargs.iteritems():      # styles is a regular dictionary
             if key == "num":
                 self.num = value
@@ -128,16 +136,25 @@ class AnswerButton(Button):
 class Stimulus(DragNDropWidget):
     def __init__(self, **kwargs):
         super(Stimulus, self).__init__(**kwargs)
+        self.border_width = 5
+        # background
         with self.canvas:
-            self.colour = Color(0,0.5,0,1)
-            self.bg_rect = Rectangle(pos=self.pos, size=self.size)
+            border_colour = get_color_from_hex("#111111")
+            bg_colour = get_color_from_hex("#0b6000")
+            self.border_colour = Color(border_colour[0],border_colour[1],border_colour[2],border_colour[3])
+            self.border = Rectangle(size=(card_size_raw[0]+(self.border_width*2),card_size_raw[1]+(self.border_width*2)))
+            self.colour = Color(bg_colour[0],bg_colour[1],bg_colour[2],bg_colour[3])
+            self.bg_rect = Rectangle(source='assets/sign.png',pos=self.pos, size=card_size)
         self.label = Label(text="[color=ff0000]World[/color]", markup=True)
         self.label.font_name="assets/Montserrat-Bold.ttf"
         self.add_widget(self.label)
         self.font_size = Window.width*0.018
-        self.x = Window.width/2 - self.width/2
-        self.y = Window.height/2 - self.height/2
-        self.label.pos = self.pos
+        self.x = Window.width/2 - card_size_raw[0]/2
+        print Window.width
+        self.y = Window.height/2 - card_size_raw[1]/2
+        # hardcoding for now because it won't centre properly!
+        self.label_centre = (self.x - 10,self.y - 20)
+        self.label.pos = self.label_centre
         for key, value in kwargs.iteritems():
            if key == "_parent":
                self._parent = value
@@ -149,10 +166,15 @@ class Stimulus(DragNDropWidget):
         # update it regularly so it repaints when stuck to cursor
         Clock.schedule_interval(self.update, 1.0/60.0)
     def update(self, args):
-        self.label.pos = self.pos
+        # this is just weird. I don't know why I need to add a sixth to it, or any of why this is a problem :(
+        self.label_centre = (self.x + (card_size_raw[0] * 0.15),self.y - 20 * 0.15)
+        self.label.pos = self.label_centre
         self.bg_rect.pos = self.pos
+        self.border.pos = (self.x-self.border_width,self.y-self.border_width)
         # ugly hack to keep size from inheriting from parent
-        self.size = (100,100)
+        self.size = card_size
+        #debugging:
+        # self.label.text = str(self.pos)
     def on_drop(self):
         gui = self._parent
         gui.new_stimulus()
@@ -211,7 +233,7 @@ class GUI(Widget):
         # buttons
         self.buttons = []
         for ii in range(spec["max_nback"]):
-            tmpbutton = AnswerButton(_parent=self,text=str(num2words_dict[ii+1]), num=ii+1, pos=(Window.width*0.05,Window.height*(0.8-ii*0.15) ) )
+            tmpbutton = AnswerButton(_parent=self,text=str(num2words_dict[ii+1]), num=ii+1, pos=(Window.width*0.05,Window.height*(0.8-ii*0.19) ) )
             self.buttons.append(tmpbutton)
             self.parent.add_widget(tmpbutton)
         # pass button
@@ -273,6 +295,7 @@ class GUI(Widget):
             tmpheart = WidgetDrawer(imageStr="./assets/heart.png")
             tmpheart.pos=Window.width*(0.8+0.05*ii),Window.height*(0.9)
             self.hearts.append(tmpheart)
+            print tmpheart.size
             self.add_widget(tmpheart)
 
 

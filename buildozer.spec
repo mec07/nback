@@ -7,13 +7,13 @@ title = "nBack"
 package.name = "nback"
 
 # (str) Package domain (needed for android/ios packaging)
-package.domain = "https://github.com/mec07/nback"
+package.domain = "org.test"
 
 # (str) Source code where the main.py live
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas
+source.include_exts = py,png,jpg,kv,atlas,properties
 
 # (list) Source files to exclude (let empty to not exclude anything)
 #source.exclude_exts = spec
@@ -65,7 +65,7 @@ fullscreen = 1
 #android.minapi = 8
 
 # (int) Android SDK version to use
-#android.sdk = 21
+android.sdk = 14
 
 # (str) Android NDK version to use
 #android.ndk = 9c
@@ -77,13 +77,13 @@ fullscreen = 1
 #android.ndk_path =
 
 # (str) Android SDK directory (if empty, it will be automatically downloaded.)
-android.sdk_path = "/home/jonathan/Android/Sdk"
+#android.sdk_path = "/home/jonathan/Android/Sdk/build-tools/21.1.1"
 
 # (str) python-for-android git clone directory (if empty, it will be automatically cloned from github)
 #android.p4a_dir =
 
 # (list) python-for-android whitelist
-#android.p4a_whitelist =
+#android.p4a_whitelist = "whitelist.txt"
 
 # (str) Android entry point, default is ok for Kivy-based app
 #android.entrypoint = org.renpy.android.PythonActivity
