@@ -38,7 +38,7 @@ spec = {
     "num_high_scores": 10, 
     "highscorefile":"highscores.txt",
     "max_nback": 5, 
-    "type_stimulus": "animals", 
+    "type_stimulus": "badwords", 
     "present_stimuli": 10,
     "num_stimuli": 5,
     "max_name_length":10,
