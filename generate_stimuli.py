@@ -19,10 +19,10 @@ def generate_stimulus(type_stimulus,num_stimuli):
     if len(STIMULI)>num_stimuli:
         maxnum=int(num_stimuli)
     else:
-        maxnum=len(STIMULI)-1
+        maxnum=len(STIMULI)
 
     # Generate a random number 
-    index = randint(0,maxnum)
+    index = randint(0,maxnum-1)
     return STIMULI[index]
 
 
