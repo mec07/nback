@@ -260,7 +260,7 @@ class GUI(Widget):
         self.score = 0
         self.score_display = Label(text="0")
         self.score_display.x = Window.width*0.5 - self.score_display.width/2
-        self.score_display.y = Window.height*0.9 - ((self.score_display.width/2)*2.5)
+        self.score_display.y = Window.height*0.8 - ((self.score_display.width/2)*2.5)
         self.add_widget(self.score_display)
 
     #this is the main widget that contains the game. 

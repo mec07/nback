@@ -1,0 +1,3 @@
+title=nBack
+author= Marc Coury and Jonathan King
+orientation=portrait
