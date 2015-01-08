@@ -47,7 +47,7 @@ spec = {
     "max_name_length":10,
     "max_score":1000000,
     "num_lives":3,
-    "gamename":"NBACK",
+    "gamename":"nBack",
     "max_level":5
 }
 
@@ -55,12 +55,18 @@ card_size_raw = [150,90]
 drop_zone_size = (card_size_raw[0] + (card_size_raw[0] * 0.2),card_size_raw[1]+ (card_size_raw[1] * 0.3))
 card_size = (card_size_raw[0],card_size_raw[1])
 
-num2words_dict = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven', 8: 'Eight', 9: 'Nine', 10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen', 15: 'Fifteen', 16: 'Sixteen', 17: 'Seventeen', 18: 'Eighteen', 19: 'Nineteen'}
+num2words_dict = {1: '1 Back', 2: '2 Back', 3: '3 Back', 4: '4 Back', 5: '5 Back', 6: '6 Back', 7: '7 Back', 8: '8 Back', 9: '9 Back', 10: '10 Back'}
 
 start_text = '''
-Welcome to nBack!
+Improve your short term memory by playing nBack!
 
-The skill of this game is in recognising and remembering patterns.
+
+
+The aim is to remember how far back was the last time that you saw the word 
+presented to you, up to a maximum of 5 back. 
+
+The Pass button is for when you haven't previously seen the presented word 
+or you can't remember how many back was the last time that you saw it.
 '''
 
 
@@ -221,7 +227,7 @@ class GUI(Widget):
         self.lives = spec["num_lives"]
         # draw elements
         self.started = True
-        l = Label(text='NBack', font_name="assets/Montserrat-Bold.ttf") #give the game a title
+        l = Label(text=spec['gamename'], font_name="assets/Montserrat-Bold.ttf") #give the game a title
         l.x = Window.width/2 - l.width/2
         l.y = Window.height*0.8
         if self.start_label:
