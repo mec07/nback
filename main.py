@@ -6,6 +6,7 @@ import time
 import os
 import json
 
+import platform
 from kivy.app import App
 from kivy.animation import Animation
 from kivy.uix.widget import Widget
@@ -17,6 +18,7 @@ from kivy.properties import NumericProperty
 from kivy.clock import Clock
 from kivy.graphics import Rectangle, Color, Ellipse, Line
 from kivy.utils import get_color_from_hex
+from plyer import vibrator
 from random import randint
 from generate_stimuli import *
 from evaluation import *
@@ -220,7 +222,6 @@ class GUI(Widget):
             self.highscores['scores']=[0]
             self.highscores['names']=[":)"]
 
-
     def gameStart(self): 
         self.hearts = []
         self.buttons = []
@@ -315,10 +316,15 @@ class GUI(Widget):
         # Evaluate the user's response
         answer = evaluate_response(spec['verbose'],self.stimulus_store,response)
         if not answer:
+            # reduce number of lives by 1
             self.lives-=1 
+            # remove a heart
             self.remove_widget(self.hearts[0])
             self.hearts.pop(0)
-
+            # if android:
+            # if the device has a vibrator then vibrate for 0.5 second
+            if vibrator.exists():
+                vibrator.vibrate(0.5)
         # update score based upon evaluation
         if answer:
             self.score+=self.num_points(response)
