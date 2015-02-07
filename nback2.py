@@ -233,9 +233,9 @@ class GUI(Widget):
         if self.start_label:
             self.remove_widget(self.start_label)
             #self.start_label = None
-        #if self.highscore_label:
-        #    self.remove_widget(self.highscore_label)
-        #    # self.highscore_label = None
+        if self.highscore_label:
+            self.remove_widget(self.highscore_label)
+            # self.highscore_label = None
         self.add_widget(l)
         # lives
         self.lives = spec["num_lives"]
@@ -274,7 +274,7 @@ class GUI(Widget):
         self.start_label = CentreLabel(_parent=self, text=start_text, pos=Window.center)
         self.add_widget(self.start_label)
 
-    def new_stimulus(self):
+    def __new_stimulus__(self):
         # create stimulus
         self.stimulus = Stimulus(_parent=self)
         self.parent.add_widget(self.stimulus)
@@ -285,7 +285,11 @@ class GUI(Widget):
         for ii in range(spec["max_nback"] + 1): # added one for pass button
             # ipdb.set_trace()
             self.parent.remove_widget(self.buttons[ii])
-
+        # remake stimulus
+        self.start_label = CentreLabel(_parent=self, text="Touch to restart")
+        self.add_widget(self.start_label)
+        self.started = False
+        # Is this a new highscore?
 
         if self.score > self.highscores["scores"][0]:
             print "New Highscore!!"
@@ -293,15 +297,15 @@ class GUI(Widget):
             # If so then update the highscore file
             with open(spec['highscorefile'],'w') as f:
                 json.dump(self.highscores,f)
+        # Print out high score list
 
-        # remake stimulus
-        highscore_text = "Click to restart\n\n"+"Highscores\n"+str(self.highscores["scores"][0])
-        self.start_label = CentreLabel(_parent=self, text=highscore_text)
-        self.add_widget(self.start_label)
-        self.started = False
-        # Is this a new highscore?
+        self.highscore_label = Label()
+        self.highscore_label.text = "Highscore = "+str(self.highscores['scores'][0])
+        self.highscore_label.x = Window.width/2 - self.width/2
+        self.highscore_label.y = 0 + self.height/2
+        self.highscore_label.font_name="assets/Montserrat-Bold.ttf"
+        self.add_widget(self.highscore_label)
 
- 
 
 
 
@@ -383,4 +387,4 @@ if __name__ == '__main__' :
 
 
 
-
+    
